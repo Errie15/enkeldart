@@ -1,0 +1,196 @@
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { useGameContext } from '../contexts/GameContext';
+
+export default function ScoreInput() {
+  const { addScore, currentPlayer, nextPlayer } = useGameContext();
+  const [currentScore, setCurrentScore] = useState('');
+  const [throwsLeft, setThrowsLeft] = useState(3);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
+  const playerChangePending = useRef(false);
+
+  useEffect(() => {
+    // När en ny spelare börjar -> alltid 3 kast kvar
+    setThrowsLeft(3);
+    setStatusMessage('');
+    setIsSubmitting(false);
+    playerChangePending.current = false;
+    setCurrentScore('');
+  }, [currentPlayer]);
+  
+
+  const handleNumberClick = (num: number) => {
+    if (isSubmitting || playerChangePending.current || currentScore.length >= 3) return;
+    const newScore = currentScore + num.toString();
+    if (parseInt(newScore) > 180) return;
+    setCurrentScore(newScore);
+  };
+
+  const handleDelete = () => {
+    if (isSubmitting || playerChangePending.current) return;
+    setCurrentScore(currentScore.slice(0, -1));
+  };
+
+  const handleClear = () => {
+    if (isSubmitting || playerChangePending.current) return;
+    setCurrentScore('');
+  };
+
+  const registerScore = (score: number) => {
+    addScore(score);
+    setCurrentScore('');
+    setThrowsLeft(prev => Math.max(0, prev - 1));
+  };
+  
+
+  const handleSubmit = () => {
+    if (!currentScore || isSubmitting || playerChangePending.current) return;
+
+    const score = parseInt(currentScore);
+    if (score < 0 || score > 180) return;
+
+    setIsSubmitting(true);
+    const isLastThrow = throwsLeft === 1;
+
+    setTimeout(() => {
+      registerScore(score);
+
+      if (isLastThrow) {
+        playerChangePending.current = true;
+        setStatusMessage(`${score} poäng registrerat! Turen går vidare...`);
+        setTimeout(() => {
+          nextPlayer();
+          setIsSubmitting(false);
+        }, 600);
+      } else {
+        setIsSubmitting(false);
+      }
+    }, 100);
+  };
+
+  const handleMiss = () => {
+    if (isSubmitting || playerChangePending.current) return;
+
+    setIsSubmitting(true);
+    const isLastThrow = throwsLeft === 1;
+
+    setTimeout(() => {
+      registerScore(0);
+
+      if (isLastThrow) {
+        playerChangePending.current = true;
+        setStatusMessage('Miss registrerad! Turen går vidare...');
+        setTimeout(() => {
+          nextPlayer();
+          setIsSubmitting(false);
+        }, 600);
+      } else {
+        setIsSubmitting(false);
+      }
+    }, 100);
+  };
+
+  const handleNextPlayer = () => {
+    if (isSubmitting || playerChangePending.current) return;
+    setIsSubmitting(true);
+    playerChangePending.current = true;
+    setStatusMessage('Byter spelare...');
+    setTimeout(() => {
+      nextPlayer();
+    }, 500);
+  };
+
+  const renderNumberButton = (num: number) => (
+    <button
+      key={num}
+      onClick={() => handleNumberClick(num)}
+      className="w-full h-16 bg-blue-600 text-white text-xl font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 shadow"
+      disabled={isSubmitting || playerChangePending.current}
+    >
+      {num}
+    </button>
+  );
+
+  return (
+    <div className="w-full max-w-md mx-auto">
+      <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
+        <div className="mb-3 flex justify-between items-center">
+          <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Kast kvar: {throwsLeft}
+          </div>
+          {throwsLeft < 3 && (
+            <button
+              onClick={handleNextPlayer}
+              className={`px-3 py-1 text-white font-bold rounded-lg text-sm ${
+                isSubmitting || playerChangePending.current
+                  ? 'bg-gray-400 dark:bg-gray-700' 
+                  : 'bg-gray-600 hover:bg-gray-700'
+              }`}
+              disabled={isSubmitting || playerChangePending.current}
+            >
+              {isSubmitting ? 'Byter...' : 'Nästa spelare'}
+            </button>
+          )}
+        </div>
+
+        {statusMessage && (
+          <div className="mb-3 p-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-lg text-sm font-medium text-center">
+            {statusMessage}
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-700 p-4 rounded-lg mb-4 h-16 flex items-center justify-between">
+          <span className="text-2xl font-bold dark:text-white">{currentScore || '0'}</span>
+          {currentScore && (
+            <button 
+              onClick={handleDelete}
+              className="text-red-500 hover:text-red-700"
+              disabled={isSubmitting || playerChangePending.current}
+            >
+              ⌫
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mb-2">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(renderNumberButton)}
+          <button
+            onClick={handleClear}
+            className="w-full h-16 bg-red-600 text-white text-xl font-bold rounded-lg hover:bg-red-700 active:bg-red-800 shadow"
+            disabled={isSubmitting || playerChangePending.current}
+          >
+            C
+          </button>
+          {renderNumberButton(0)}
+          <button
+            onClick={handleSubmit}
+            className={`w-full h-16 text-white text-xl font-bold rounded-lg shadow ${
+              isSubmitting || playerChangePending.current
+                ? 'bg-green-400 dark:bg-green-700' 
+                : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
+            }`}
+            disabled={throwsLeft === 0 || isSubmitting || playerChangePending.current || !currentScore}
+          >
+            {isSubmitting ? 'Registrerar...' : 'Registrera'}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={handleMiss}
+            className={`w-full h-10 text-white font-bold rounded-lg shadow col-span-3 ${
+              isSubmitting || playerChangePending.current 
+                ? 'bg-red-400 dark:bg-red-700' 
+                : 'bg-red-600 hover:bg-red-700 active:bg-red-800'
+            }`}
+            disabled={throwsLeft === 0 || isSubmitting || playerChangePending.current}
+          >
+            {isSubmitting ? 'Registrerar...' : 'Miss'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
