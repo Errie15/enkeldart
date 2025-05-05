@@ -5,6 +5,7 @@ import { useGameContext } from '../contexts/GameContext';
 import GameSetup from './GameSetup';
 import PlayerScoreboard from './PlayerScoreboard';
 import ScoreInput from './ScoreInput';
+import AroundTheClockInput from './AroundTheClockInput';
 import GameOver from './GameOver';
 import StatisticsModal from './StatisticsModal';
 
@@ -62,28 +63,50 @@ export default function DartGame() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-md mx-auto mb-8">
         <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">
-          Enkelt Dartspel
+          {gameSettings.gameMode === 'standard' ? '301/501' : 'Around the Clock'}
         </h1>
         
-        {gameState === 'playing' && (
-          <div className="mt-4 flex justify-center">
-            <div className={`px-4 py-2 rounded-full ${
-              gameSettings.doubleOut 
-                ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-                : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-            }`}>
-              {gameSettings.doubleOut ? 'Dubbel ut' : 'Singel ut'}
+        {gameState === 'playing' && currentPlayer && (
+          <div className="mt-2 flex flex-col items-center">
+            <div className="bg-blue-500 text-white px-4 py-2 rounded-full font-bold animate-pulse mb-2">
+              {currentPlayer.name}
             </div>
+            
+            {gameSettings.gameMode === 'standard' && (
+              <div className={`px-4 py-2 rounded-full ${
+                gameSettings.doubleOut 
+                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                  : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+              }`}>
+                {gameSettings.doubleOut ? 'Dubbel ut' : 'Singel ut'}
+              </div>
+            )}
+            
+            {gameSettings.gameMode === 'aroundTheClock' && (
+              <div className="px-4 py-2 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                {!gameSettings.includeOuterBull 
+                  ? 'Utan bullseye (1-20)' 
+                  : gameSettings.combinedBullseye 
+                    ? 'Med kombinerad bullseye (1-21)' 
+                    : 'Med bullseye (1-22)'}
+              </div>
+            )}
           </div>
         )}
       </div>
       
       {gameState === 'setup' && <GameSetup />}
       
-      {gameState === 'playing' && (
+      {gameState === 'playing' && gameSettings.gameMode === 'standard' && (
         <div className="space-y-6">
           <PlayerScoreboard />
           <ScoreInput />
+        </div>
+      )}
+      
+      {gameState === 'playing' && gameSettings.gameMode === 'aroundTheClock' && (
+        <div className="space-y-6">
+          <AroundTheClockInput />
         </div>
       )}
       

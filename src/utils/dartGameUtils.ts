@@ -8,11 +8,19 @@ export type Player = {
   score: number;
   initialScore: number;
   history: number[][];
+  // För Around the Clock
+  currentTarget?: number;
+  hitsInOrder?: number[];
 };
+
+export type GameMode = 'standard' | 'aroundTheClock';
 
 export type GameSettings = {
   doubleOut: boolean;
   initialScore: number; // 301 eller 501
+  gameMode: GameMode;
+  includeOuterBull: boolean; // För Around the Clock: om man ska avsluta med bullseye
+  combinedBullseye: boolean; // För Around the Clock: om bulls ska vara kombinererade (Y/B, nr 21)
 };
 
 export type PlayerStatistics = {
@@ -250,7 +258,28 @@ export const getCheckoutSuggestions = (score: number, doubleOut: boolean): strin
 };
 
 // Create new players
-export const createPlayers = (count: number, initialScore: number = 501): Player[] => {
+export const createPlayers = (count: number, initialScore: number = 501, gameMode: GameMode = 'standard'): Player[] => {
+  if (gameMode === 'standard') {
+    return Array.from({ length: count }, (_, i) => ({
+      id: i,
+      name: `Spelare ${i + 1}`,
+      score: initialScore,
+      initialScore,
+      history: [],
+    }));
+  } else if (gameMode === 'aroundTheClock') {
+    return Array.from({ length: count }, (_, i) => ({
+      id: i,
+      name: `Spelare ${i + 1}`,
+      score: 0, // Poäng används inte i Around the Clock
+      initialScore: 0,
+      history: [],
+      currentTarget: 1, // Börjar med 1
+      hitsInOrder: [], // Håller reda på vilka nummer som träffats i ordning
+    }));
+  }
+  
+  // Default fallback
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     name: `Spelare ${i + 1}`,

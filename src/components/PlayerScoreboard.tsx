@@ -48,9 +48,14 @@ function PlayerCard({ player, isActive, checkoutOptions }: {
 
   return (
     <div className={`p-4 rounded-lg shadow ${isActive 
-      ? 'bg-blue-100 dark:bg-blue-900 border-2 border-blue-500' 
+      ? 'bg-blue-100 dark:bg-blue-900 border-2 border-blue-500 relative' 
       : 'bg-gray-100 dark:bg-gray-800'}`}
     >
+      {isActive && (
+        <div className="absolute -top-3 -left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold z-10 animate-pulse">
+          Aktiv spelare
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <h3 className={`text-lg font-bold ${isActive ? 'text-blue-800 dark:text-blue-300' : 'dark:text-white'}`}>
           {player.name}
