@@ -33,6 +33,8 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#2563eb" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icons/dartboard-192.png" />
+        <link rel="apple-touch-icon" sizes="512x512" href="/icons/dartboard-512.png" />
       </head>
       <body className={inter.className}>{children}</body>
     </html>

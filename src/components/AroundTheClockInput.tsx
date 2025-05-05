@@ -84,7 +84,7 @@ export default function AroundTheClockInput() {
             fontWeight: isTarget ? 700 : 500,
             opacity: isCompleted ? 0.5 : 1,
           }}
-          className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
+          className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
         >
           {i}
         </button>
@@ -109,7 +109,7 @@ export default function AroundTheClockInput() {
             fontWeight: isTarget ? 700 : 500,
             opacity: isCompleted ? 0.5 : 1,
           }}
-          className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
+          className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
         >
           {i}
         </button>
@@ -134,7 +134,7 @@ export default function AroundTheClockInput() {
             fontWeight: isTarget ? 700 : 500,
             opacity: isCompleted ? 0.5 : 1,
           }}
-          className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
+          className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
         >
           {i}
         </button>
@@ -161,7 +161,7 @@ export default function AroundTheClockInput() {
               fontWeight: isBullTarget ? 700 : 500,
               opacity: isBullCompleted ? 0.5 : 1,
             }}
-            className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center relative overflow-hidden"
+            className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center relative overflow-hidden"
           >
             {isBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
             <div className="absolute inset-0 flex">
@@ -188,7 +188,7 @@ export default function AroundTheClockInput() {
               fontWeight: isOuterBullTarget ? 700 : 500,
               opacity: isOuterBullCompleted ? 0.5 : 1,
             }}
-            className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
+            className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
           >
             {isOuterBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
             Yttre
@@ -211,7 +211,7 @@ export default function AroundTheClockInput() {
               fontWeight: isInnerBullTarget ? 700 : 500,
               opacity: isInnerBullCompleted ? 0.5 : 1,
             }}
-            className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center relative"
+            className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center relative"
           >
             {isInnerBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
             Bull
@@ -221,13 +221,13 @@ export default function AroundTheClockInput() {
     }
     
     numbers.push(
-      <div key="row1" className="flex justify-center gap-4 mb-4">{firstRow}</div>,
-      <div key="row2" className="flex justify-center gap-4 mb-4">{secondRow}</div>,
-      <div key="row3" className="flex justify-center gap-4 mb-4">{thirdRow}</div>
+      <div key="row1" className="flex justify-center gap-2 mb-3">{firstRow}</div>,
+      <div key="row2" className="flex justify-center gap-2 mb-3">{secondRow}</div>,
+      <div key="row3" className="flex justify-center gap-2 mb-3">{thirdRow}</div>
     );
     
     if (bullsRow.length > 0) {
-      numbers.push(<div key="bulls" className="flex justify-center gap-4">{bullsRow}</div>);
+      numbers.push(<div key="bulls" className="flex justify-center gap-2">{bullsRow}</div>);
     }
     
     return numbers;
