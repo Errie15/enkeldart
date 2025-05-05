@@ -6,9 +6,10 @@ import GameSetup from './GameSetup';
 import PlayerScoreboard from './PlayerScoreboard';
 import ScoreInput from './ScoreInput';
 import GameOver from './GameOver';
+import StatisticsModal from './StatisticsModal';
 
 export default function DartGame() {
-  const { gameState, gameSettings, currentPlayer } = useGameContext();
+  const { gameState, gameSettings, currentPlayer, showStats, setShowStats, playerWithStats } = useGameContext();
   const prevHistoryLengthRef = useRef<number>(0);
   
   // Play sound on bust
@@ -53,6 +54,10 @@ export default function DartGame() {
     }
   }, [gameState, currentPlayer]);
 
+  const handleCloseStats = () => {
+    setShowStats(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-md mx-auto mb-8">
@@ -83,6 +88,13 @@ export default function DartGame() {
       )}
       
       {gameState === 'finished' && <GameOver />}
+
+      {showStats && playerWithStats && (
+        <StatisticsModal 
+          player={playerWithStats} 
+          onClose={handleCloseStats} 
+        />
+      )}
     </div>
   );
 } 

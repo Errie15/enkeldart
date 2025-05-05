@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameContext } from '../contexts/GameContext';
+import { evaluateExpression } from '../utils/mathExpressionParser';
 
 export default function ScoreInput() {
   const { addScore, currentPlayer, nextPlayer } = useGameContext();
@@ -9,6 +10,7 @@ export default function ScoreInput() {
   const [throwsLeft, setThrowsLeft] = useState(3);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
+  const [calculatedValue, setCalculatedValue] = useState<number | null>(null);
   const playerChangePending = useRef(false);
 
   useEffect(() => {
@@ -18,14 +20,34 @@ export default function ScoreInput() {
     setIsSubmitting(false);
     playerChangePending.current = false;
     setCurrentScore('');
+    setCalculatedValue(null);
   }, [currentPlayer]);
   
+  useEffect(() => {
+    // Check if input contains operators and calculate result
+    if (currentScore && /[x]/.test(currentScore)) {
+      const result = evaluateExpression(currentScore);
+      setCalculatedValue(result);
+    } else {
+      setCalculatedValue(null);
+    }
+  }, [currentScore]);
 
   const handleNumberClick = (num: number) => {
-    if (isSubmitting || playerChangePending.current || currentScore.length >= 3) return;
+    if (isSubmitting || playerChangePending.current || currentScore.length >= 10) return;
     const newScore = currentScore + num.toString();
-    if (parseInt(newScore) > 180) return;
     setCurrentScore(newScore);
+  };
+
+  const handleOperatorClick = () => {
+    if (isSubmitting || playerChangePending.current || currentScore.length >= 10) return;
+    if (currentScore === '') return; // Prevent starting with an operator
+    
+    // Don't add operator if the last character is already an operator
+    const lastChar = currentScore.slice(-1);
+    if (/[x]/.test(lastChar)) return;
+    
+    setCurrentScore(currentScore + 'x');
   };
 
   const handleDelete = () => {
@@ -33,33 +55,43 @@ export default function ScoreInput() {
     setCurrentScore(currentScore.slice(0, -1));
   };
 
-  const handleClear = () => {
-    if (isSubmitting || playerChangePending.current) return;
-    setCurrentScore('');
-  };
-
   const registerScore = (score: number) => {
     addScore(score);
     setCurrentScore('');
+    setCalculatedValue(null);
     setThrowsLeft(prev => Math.max(0, prev - 1));
   };
   
-
   const handleSubmit = () => {
-    if (!currentScore || isSubmitting || playerChangePending.current) return;
+    if (isSubmitting || playerChangePending.current) return;
+    if (!currentScore) return;
 
-    const score = parseInt(currentScore);
-    if (score < 0 || score > 180) return;
+    let scoreToRegister: number;
+
+    // If we have a calculated value, use that
+    if (calculatedValue !== null) {
+      scoreToRegister = calculatedValue;
+    } else {
+      // Otherwise parse the input as a number
+      scoreToRegister = parseInt(currentScore);
+    }
+
+    // Validate score
+    if (isNaN(scoreToRegister) || scoreToRegister < 0 || scoreToRegister > 180) {
+      setStatusMessage('Ogiltig poäng. Måste vara mellan 0-180.');
+      setTimeout(() => setStatusMessage(''), 2000);
+      return;
+    }
 
     setIsSubmitting(true);
     const isLastThrow = throwsLeft === 1;
 
     setTimeout(() => {
-      registerScore(score);
+      registerScore(scoreToRegister);
 
       if (isLastThrow) {
         playerChangePending.current = true;
-        setStatusMessage(`${score} poäng registrerat! Turen går vidare...`);
+        setStatusMessage(`${scoreToRegister} poäng registrerat! Turen går vidare...`);
         setTimeout(() => {
           nextPlayer();
           setIsSubmitting(false);
@@ -106,7 +138,7 @@ export default function ScoreInput() {
     <button
       key={num}
       onClick={() => handleNumberClick(num)}
-      className="w-full h-16 bg-blue-600 text-white text-xl font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 shadow"
+      className="w-full h-12 bg-blue-600 text-white text-xl font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 shadow"
       disabled={isSubmitting || playerChangePending.current}
     >
       {num}
@@ -142,7 +174,12 @@ export default function ScoreInput() {
         )}
 
         <div className="bg-white dark:bg-gray-700 p-4 rounded-lg mb-4 h-16 flex items-center justify-between">
-          <span className="text-2xl font-bold dark:text-white">{currentScore || '0'}</span>
+          <div className="flex flex-col">
+            <span className="text-2xl font-bold dark:text-white">{currentScore || '0'}</span>
+            {calculatedValue !== null && (
+              <span className="text-sm text-gray-600 dark:text-gray-300">= {calculatedValue}</span>
+            )}
+          </div>
           {currentScore && (
             <button 
               onClick={handleDelete}
@@ -155,32 +192,15 @@ export default function ScoreInput() {
         </div>
 
         <div className="grid grid-cols-3 gap-2 mb-2">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(renderNumberButton)}
-          <button
-            onClick={handleClear}
-            className="w-full h-16 bg-red-600 text-white text-xl font-bold rounded-lg hover:bg-red-700 active:bg-red-800 shadow"
-            disabled={isSubmitting || playerChangePending.current}
-          >
-            C
-          </button>
-          {renderNumberButton(0)}
-          <button
-            onClick={handleSubmit}
-            className={`w-full h-16 text-white text-xl font-bold rounded-lg shadow ${
-              isSubmitting || playerChangePending.current
-                ? 'bg-green-400 dark:bg-green-700' 
-                : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
-            }`}
-            disabled={throwsLeft === 0 || isSubmitting || playerChangePending.current || !currentScore}
-          >
-            {isSubmitting ? 'Registrerar...' : 'Registrera'}
-          </button>
+          {[7, 8, 9].map(renderNumberButton)}
+          {[4, 5, 6].map(renderNumberButton)}
+          {[1, 2, 3].map(renderNumberButton)}
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={handleMiss}
-            className={`w-full h-10 text-white font-bold rounded-lg shadow col-span-3 ${
+            className={`w-full h-12 text-white font-bold rounded-lg shadow ${
               isSubmitting || playerChangePending.current 
                 ? 'bg-red-400 dark:bg-red-700' 
                 : 'bg-red-600 hover:bg-red-700 active:bg-red-800'
@@ -188,6 +208,30 @@ export default function ScoreInput() {
             disabled={throwsLeft === 0 || isSubmitting || playerChangePending.current}
           >
             {isSubmitting ? 'Registrerar...' : 'Miss'}
+          </button>
+          
+          {renderNumberButton(0)}
+          
+          <button
+            onClick={handleOperatorClick}
+            className="w-full h-12 bg-gray-500 text-white text-xl font-bold rounded-lg hover:bg-gray-600 active:bg-gray-700 shadow"
+            disabled={isSubmitting || playerChangePending.current}
+          >
+            x
+          </button>
+        </div>
+        
+        <div className="mt-2">
+          <button
+            onClick={handleSubmit}
+            className={`w-full h-12 text-white text-md font-bold rounded-lg shadow ${
+              isSubmitting || playerChangePending.current
+                ? 'bg-green-400 dark:bg-green-700' 
+                : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
+            }`}
+            disabled={throwsLeft === 0 || isSubmitting || playerChangePending.current || !currentScore}
+          >
+            {isSubmitting ? 'Registrerar...' : 'OK'}
           </button>
         </div>
       </div>

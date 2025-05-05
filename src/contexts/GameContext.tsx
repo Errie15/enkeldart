@@ -19,6 +19,9 @@ interface GameContextType {
   currentPlayer: Player | null;
   winner: Player | null;
   getCheckoutOptions: (player: Player) => string[];
+  showStats: boolean;
+  setShowStats: (show: boolean) => void;
+  playerWithStats: Player | null;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -29,6 +32,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [gameSettings, setGameSettings] = useState<GameSettings>({ doubleOut: true });
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'finished'>('setup');
   const [winner, setWinner] = useState<Player | null>(null);
+  const [showStats, setShowStats] = useState(false);
+  const [playerWithStats, setPlayerWithStats] = useState<Player | null>(null);
 
   // Initialize with default players
   useEffect(() => {
@@ -59,6 +64,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     setCurrentPlayerIndex(0);
     setGameState('setup');
     setWinner(null);
+    setShowStats(false);
+    setPlayerWithStats(null);
   };
 
   const setDoubleOut = (doubleOut: boolean) => {
@@ -93,14 +100,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
       player.history = newHistory;
   
       updatedPlayers[currentPlayerIndex] = player;
+      
+      // Om spelaren når exakt 0, visa statistik
+      if (newScore === 0) {
+        setShowStats(true);
+        setPlayerWithStats(player);
+        setWinner(player);
+        setGameState('finished');
+      }
+      
       return updatedPlayers;
     });
   };
   
-  
-  
-  
-
   const nextPlayer = () => {
     if (gameState !== 'playing') return;
     
@@ -153,6 +165,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         currentPlayer,
         winner,
         getCheckoutOptions,
+        showStats,
+        setShowStats,
+        playerWithStats
       }}
     >
       {children}

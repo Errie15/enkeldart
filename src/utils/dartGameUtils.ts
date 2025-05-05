@@ -14,6 +14,34 @@ export type GameSettings = {
   doubleOut: boolean;
 };
 
+export type PlayerStatistics = {
+  totalThrows: number;
+  averagePerRound: number;
+  averagePerThrow: number;
+};
+
+// Calculate player statistics
+export const calculatePlayerStatistics = (player: Player): PlayerStatistics => {
+  // Count total number of throws
+  let totalThrows = 0;
+  
+  if (player.history) {
+    player.history.forEach(round => {
+      totalThrows += round.length;
+    });
+  }
+  
+  // Calculate scores
+  const pointsScored = player.initialScore - player.score;
+  const totalRounds = player.history ? player.history.length : 0;
+  
+  return {
+    totalThrows,
+    averagePerRound: totalRounds > 0 ? pointsScored / totalRounds : 0,
+    averagePerThrow: totalThrows > 0 ? pointsScored / totalThrows : 0
+  };
+};
+
 // Check if throw would result in a bust
 export const isBust = (currentScore: number, throwScore: number, doubleOut: boolean): boolean => {
   const newScore = currentScore - throwScore;
