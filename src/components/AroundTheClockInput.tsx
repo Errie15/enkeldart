@@ -66,9 +66,9 @@ export default function AroundTheClockInput() {
   const renderNumbers = () => {
     const numbers = [];
 
-    // Första raden: 1-8
+    // Första raden: 1-4
     const firstRow = [];
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 4; i++) {
       const isTarget = i === currentPlayer.currentTarget;
       const isCompleted = currentPlayer.hitsInOrder?.includes(i);
       firstRow.push(
@@ -90,9 +90,9 @@ export default function AroundTheClockInput() {
       );
     }
 
-    // Andra raden: 9-12
+    // Andra raden: 5-8
     const secondRow = [];
-    for (let i = 9; i <= 12; i++) {
+    for (let i = 5; i <= 8; i++) {
       const isTarget = i === currentPlayer.currentTarget;
       const isCompleted = currentPlayer.hitsInOrder?.includes(i);
       secondRow.push(
@@ -114,9 +114,9 @@ export default function AroundTheClockInput() {
       );
     }
 
-    // Tredje raden: 13-16
+    // Tredje raden: 9-12
     const thirdRow = [];
-    for (let i = 13; i <= 16; i++) {
+    for (let i = 9; i <= 12; i++) {
       const isTarget = i === currentPlayer.currentTarget;
       const isCompleted = currentPlayer.hitsInOrder?.includes(i);
       thirdRow.push(
@@ -138,12 +138,36 @@ export default function AroundTheClockInput() {
       );
     }
 
-    // Fjärde raden: 17-20
+    // Fjärde raden: 13-16
     const fourthRow = [];
-    for (let i = 17; i <= 20; i++) {
+    for (let i = 13; i <= 16; i++) {
       const isTarget = i === currentPlayer.currentTarget;
       const isCompleted = currentPlayer.hitsInOrder?.includes(i);
       fourthRow.push(
+        <button
+          key={i}
+          onClick={() => handleNumberClick(i)}
+          disabled={isSubmitting || isCompleted || throwsLeft === 0}
+          style={{
+            background: isTarget ? 'var(--secondary)' : 'var(--accent)',
+            color: isTarget ? 'var(--accent)' : 'var(--text)',
+            border: isTarget ? '2px solid var(--detail)' : 'none',
+            fontWeight: isTarget ? 700 : 500,
+            opacity: isCompleted ? 0.5 : 1,
+          }}
+          className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center"
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Femte raden: 17-20
+    const fifthRow = [];
+    for (let i = 17; i <= 20; i++) {
+      const isTarget = i === currentPlayer.currentTarget;
+      const isCompleted = currentPlayer.hitsInOrder?.includes(i);
+      fifthRow.push(
         <button
           key={i}
           onClick={() => handleNumberClick(i)}
@@ -240,7 +264,8 @@ export default function AroundTheClockInput() {
       <div key="row1" className="flex justify-center gap-1 mb-2">{firstRow}</div>,
       <div key="row2" className="flex justify-center gap-1 mb-2">{secondRow}</div>,
       <div key="row3" className="flex justify-center gap-1 mb-2">{thirdRow}</div>,
-      <div key="row4" className="flex justify-center gap-1 mb-2">{fourthRow}</div>
+      <div key="row4" className="flex justify-center gap-1 mb-2">{fourthRow}</div>,
+      <div key="row5" className="flex justify-center gap-1 mb-2">{fifthRow}</div>
     );
     if (bullsRow.length > 0) {
       numbers.push(<div key="bulls" className="flex justify-center gap-1">{bullsRow}</div>);
