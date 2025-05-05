@@ -77,10 +77,14 @@ export default function AroundTheClockInput() {
           key={i}
           onClick={() => handleNumberClick(i)}
           disabled={isSubmitting || isCompleted || throwsLeft === 0}
-          className={`w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center
-            ${isTarget ? 'border-4 border-yellow-400' : 'border-none'}
-            ${isCompleted ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white hover:bg-gray-700'}
-          `}
+          style={{
+            background: isTarget ? 'var(--secondary)' : 'var(--accent)',
+            color: isTarget ? 'var(--accent)' : 'var(--text)',
+            border: isTarget ? '3px solid var(--detail)' : 'none',
+            fontWeight: isTarget ? 700 : 500,
+            opacity: isCompleted ? 0.5 : 1,
+          }}
+          className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
         >
           {i}
         </button>
@@ -98,10 +102,14 @@ export default function AroundTheClockInput() {
           key={i}
           onClick={() => handleNumberClick(i)}
           disabled={isSubmitting || isCompleted || throwsLeft === 0}
-          className={`w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center
-            ${isTarget ? 'border-4 border-yellow-400' : 'border-none'}
-            ${isCompleted ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white hover:bg-gray-700'}
-          `}
+          style={{
+            background: isTarget ? 'var(--secondary)' : 'var(--accent)',
+            color: isTarget ? 'var(--accent)' : 'var(--text)',
+            border: isTarget ? '3px solid var(--detail)' : 'none',
+            fontWeight: isTarget ? 700 : 500,
+            opacity: isCompleted ? 0.5 : 1,
+          }}
+          className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
         >
           {i}
         </button>
@@ -119,10 +127,14 @@ export default function AroundTheClockInput() {
           key={i}
           onClick={() => handleNumberClick(i)}
           disabled={isSubmitting || isCompleted || throwsLeft === 0}
-          className={`w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center
-            ${isTarget ? 'border-4 border-yellow-400' : 'border-none'}
-            ${isCompleted ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white hover:bg-gray-700'}
-          `}
+          style={{
+            background: isTarget ? 'var(--secondary)' : 'var(--accent)',
+            color: isTarget ? 'var(--accent)' : 'var(--text)',
+            border: isTarget ? '3px solid var(--detail)' : 'none',
+            fontWeight: isTarget ? 700 : 500,
+            opacity: isCompleted ? 0.5 : 1,
+          }}
+          className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
         >
           {i}
         </button>
@@ -142,10 +154,14 @@ export default function AroundTheClockInput() {
             key="combinedBull"
             onClick={() => handleNumberClick(21)}
             disabled={isSubmitting || isBullCompleted || throwsLeft === 0}
-            className={`w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center relative overflow-hidden
-              ${isBullTarget ? 'border-4 border-yellow-400' : 'border-none'}
-              ${isBullCompleted ? 'bg-gray-700 text-gray-400' : 'bg-gray-800 text-white hover:bg-gray-700'}
-            `}
+            style={{
+              background: isBullTarget ? 'var(--secondary)' : 'var(--accent)',
+              color: isBullTarget ? 'var(--accent)' : 'var(--text)',
+              border: isBullTarget ? '3px solid var(--detail)' : 'none',
+              fontWeight: isBullTarget ? 700 : 500,
+              opacity: isBullCompleted ? 0.5 : 1,
+            }}
+            className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center relative overflow-hidden"
           >
             {isBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
             <div className="absolute inset-0 flex">
@@ -165,10 +181,14 @@ export default function AroundTheClockInput() {
             key="outerBull"
             onClick={() => handleNumberClick(21)}
             disabled={isSubmitting || isOuterBullCompleted || throwsLeft === 0}
-            className={`w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center
-              ${isOuterBullTarget ? 'border-4 border-yellow-400' : 'border-none'}
-              ${isOuterBullCompleted ? 'bg-gray-700 text-gray-400' : 'bg-green-600 text-white hover:bg-green-500'}
-            `}
+            style={{
+              background: isOuterBullTarget ? 'var(--secondary)' : 'var(--accent)',
+              color: isOuterBullTarget ? 'var(--accent)' : 'var(--text)',
+              border: isOuterBullTarget ? '3px solid var(--detail)' : 'none',
+              fontWeight: isOuterBullTarget ? 700 : 500,
+              opacity: isOuterBullCompleted ? 0.5 : 1,
+            }}
+            className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center"
           >
             {isOuterBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
             Yttre
@@ -184,10 +204,14 @@ export default function AroundTheClockInput() {
             key="innerBull"
             onClick={() => handleNumberClick(22)}
             disabled={isSubmitting || isInnerBullCompleted || throwsLeft === 0}
-            className={`w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center relative
-              ${isInnerBullTarget ? 'border-4 border-yellow-400' : 'border-none'}
-              ${isInnerBullCompleted ? 'bg-gray-700 text-gray-400' : 'bg-red-600 text-white hover:bg-red-500'}
-            `}
+            style={{
+              background: isInnerBullTarget ? 'var(--secondary)' : 'var(--accent)',
+              color: isInnerBullTarget ? 'var(--accent)' : 'var(--text)',
+              border: isInnerBullTarget ? '3px solid var(--detail)' : 'none',
+              fontWeight: isInnerBullTarget ? 700 : 500,
+              opacity: isInnerBullCompleted ? 0.5 : 1,
+            }}
+            className="w-16 h-16 rounded-full text-xl font-bold flex items-center justify-center relative"
           >
             {isInnerBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
             Bull
@@ -211,21 +235,22 @@ export default function AroundTheClockInput() {
   
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <div className="p-6 bg-gray-900 rounded-lg shadow">
+      <div className="p-6 rounded-lg shadow" style={{ background: 'var(--bg)' }}>
         <div className="mb-4 flex justify-between items-center">
           <div className="flex flex-col">
-            <div className="text-sm font-medium text-gray-300">
+            <div className="text-sm font-medium" style={{ color: 'var(--detail)' }}>
               Kast kvar: {throwsLeft}
             </div>
-            <div className="text-lg font-bold text-blue-300">
-              {currentPlayer.name} <span className="text-gray-300">Mål: {currentPlayer.currentTarget}</span>
+            <div className="text-lg font-bold" style={{ color: 'var(--accent)' }}>
+              {currentPlayer.name} <span style={{ color: 'var(--secondary)', fontWeight: 700 }}>Mål: {currentPlayer.currentTarget}</span>
             </div>
           </div>
           
           {throwsLeft < 3 && (
             <button
               onClick={handleNextPlayer}
-              className="px-3 py-1 text-white font-bold rounded-lg text-sm bg-gray-700 hover:bg-gray-600"
+              style={{ background: 'var(--secondary)', color: 'var(--bg)' }}
+              className="px-3 py-1 font-bold rounded-lg text-sm"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Byter...' : 'Nästa spelare'}
@@ -234,7 +259,7 @@ export default function AroundTheClockInput() {
         </div>
         
         {statusMessage && (
-          <div className="mb-4 p-2 bg-blue-900 text-blue-300 rounded-lg text-sm font-medium text-center">
+          <div className="mb-4 p-2 rounded-lg text-sm font-medium text-center" style={{ background: 'var(--accent)', color: 'var(--text)' }}>
             {statusMessage}
           </div>
         )}

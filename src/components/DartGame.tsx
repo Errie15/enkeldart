@@ -60,30 +60,26 @@ export default function DartGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+    <div className="min-h-screen py-8 px-4" style={{ background: 'var(--bg)' }}>
       <div className="max-w-md mx-auto mb-8">
-        <h1 className="text-3xl font-bold text-center text-gray-800 dark:text-white">
+        <h1 className="text-3xl font-bold text-center" style={{ color: 'var(--text)' }}>
           {gameSettings.gameMode === 'standard' ? '301/501' : 'Around the Clock'}
         </h1>
         
         {gameState === 'playing' && currentPlayer && (
           <div className="mt-2 flex flex-col items-center">
-            <div className="bg-blue-500 text-white px-4 py-2 rounded-full font-bold animate-pulse mb-2">
+            <div className="px-4 py-2 rounded-full font-bold animate-pulse mb-2" style={{ background: 'var(--accent)', color: 'var(--text)' }}>
               {currentPlayer.name}
             </div>
             
             {gameSettings.gameMode === 'standard' && (
-              <div className={`px-4 py-2 rounded-full ${
-                gameSettings.doubleOut 
-                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-                  : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-              }`}>
+              <div className="px-4 py-2 rounded-full" style={{ background: 'var(--secondary)', color: 'var(--accent)' }}>
                 {gameSettings.doubleOut ? 'Dubbel ut' : 'Singel ut'}
               </div>
             )}
             
             {gameSettings.gameMode === 'aroundTheClock' && (
-              <div className="px-4 py-2 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+              <div className="px-4 py-2 rounded-full" style={{ background: 'var(--secondary)', color: 'var(--accent)' }}>
                 {!gameSettings.includeOuterBull 
                   ? 'Utan bullseye (1-20)' 
                   : gameSettings.combinedBullseye 

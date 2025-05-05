@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #232323;           /* Bakgrund (charchol) */
+  --accent: #C1272D;       /* Primär accent (röd) */
+  --highlight: #009245;    /* Highlight (grön) */
+  --text: #FFFFFF;         /* Huvudtext (vit) */
+  --secondary: #F5E6C8;    /* Sekundär (beige/ljusgul) */
+  --detail: #C9A86A;       /* Detaljer (guld/brun) */
 }
 
 @theme inline {
@@ -20,7 +24,48 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+button, .btn-primary {
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover, .btn-primary:hover {
+  background: var(--highlight);
+}
+
+input, textarea, select {
+  background: var(--secondary);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+::placeholder {
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.table, table {
+  background: var(--secondary);
+  color: var(--text);
+  border-radius: 8px;
+}
+
+th, td {
+  border-bottom: 1px solid var(--accent);
+}
+
+.overlay, .modal {
+  background: rgba(45, 45, 45, 0.95);
+  color: var(--text);
 }

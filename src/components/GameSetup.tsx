@@ -55,31 +55,31 @@ export default function GameSetup() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h2 className="text-2xl font-bold mb-6 text-center dark:text-white">Nytt spel</h2>
+      <div className="rounded-lg shadow p-6" style={{ background: 'var(--bg)' }}>
+        <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: 'var(--text)' }}>Nytt spel</h2>
         
         <div className="mb-6">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block mb-2" style={{ color: 'var(--detail)' }}>
             Spelläge:
           </label>
           <div className="flex space-x-2">
             <button
               onClick={() => handleGameModeChange('standard')}
-              className={`flex-1 py-3 rounded-lg ${
-                gameSettings.gameMode === 'standard'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-              }`}
+              style={{
+                background: gameSettings.gameMode === 'standard' ? 'var(--accent)' : 'var(--secondary)',
+                color: gameSettings.gameMode === 'standard' ? 'var(--text)' : 'var(--bg)',
+              }}
+              className="flex-1 py-3 rounded-lg transition-colors"
             >
               Standard
             </button>
             <button
               onClick={() => handleGameModeChange('aroundTheClock')}
-              className={`flex-1 py-3 rounded-lg ${
-                gameSettings.gameMode === 'aroundTheClock'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-              }`}
+              style={{
+                background: gameSettings.gameMode === 'aroundTheClock' ? 'var(--accent)' : 'var(--secondary)',
+                color: gameSettings.gameMode === 'aroundTheClock' ? 'var(--text)' : 'var(--bg)',
+              }}
+              className="flex-1 py-3 rounded-lg transition-colors"
             >
               Around the Clock
             </button>
@@ -87,16 +87,21 @@ export default function GameSetup() {
         </div>
         
         <div className="mb-6">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block mb-2" style={{ color: 'var(--detail)' }}>
             Antal spelare:
           </label>
           <select
             value={tempCount}
             onChange={handlePlayerCountChange}
-            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-white"
+            className="w-full p-3 border rounded-lg"
+            style={{
+              background: 'var(--secondary)',
+              color: 'var(--bg)',
+              borderColor: 'var(--accent)',
+            }}
           >
             {Array.from({ length: 10 }, (_, i) => i + 1).map(num => (
-              <option key={num} value={num}>
+              <option key={num} value={num} style={{ color: 'var(--bg)' }}>
                 {num}
               </option>
             ))}
@@ -106,27 +111,27 @@ export default function GameSetup() {
         {gameSettings.gameMode === 'standard' && (
           <>
             <div className="mb-6">
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block mb-2" style={{ color: 'var(--detail)' }}>
                 Startpoäng:
               </label>
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleInitialScoreChange(301)}
-                  className={`flex-1 py-3 rounded-lg ${
-                    gameSettings.initialScore === 301
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                  }`}
+                  style={{
+                    background: gameSettings.initialScore === 301 ? 'var(--accent)' : 'var(--secondary)',
+                    color: gameSettings.initialScore === 301 ? 'var(--text)' : 'var(--bg)',
+                  }}
+                  className="flex-1 py-3 rounded-lg transition-colors"
                 >
                   301
                 </button>
                 <button
                   onClick={() => handleInitialScoreChange(501)}
-                  className={`flex-1 py-3 rounded-lg ${
-                    gameSettings.initialScore === 501
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                  }`}
+                  style={{
+                    background: gameSettings.initialScore === 501 ? 'var(--accent)' : 'var(--secondary)',
+                    color: gameSettings.initialScore === 501 ? 'var(--text)' : 'var(--bg)',
+                  }}
+                  className="flex-1 py-3 rounded-lg transition-colors"
                 >
                   501
                 </button>
@@ -134,27 +139,27 @@ export default function GameSetup() {
             </div>
             
             <div className="mb-6">
-              <label className="block text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block mb-2" style={{ color: 'var(--detail)' }}>
                 Utgångsregel:
               </label>
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleDoubleOutChange(true)}
-                  className={`flex-1 py-3 rounded-lg ${
-                    gameSettings.doubleOut
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                  }`}
+                  style={{
+                    background: gameSettings.doubleOut ? 'var(--accent)' : 'var(--secondary)',
+                    color: gameSettings.doubleOut ? 'var(--text)' : 'var(--bg)',
+                  }}
+                  className="flex-1 py-3 rounded-lg transition-colors"
                 >
                   Dubbel ut
                 </button>
                 <button
                   onClick={() => handleDoubleOutChange(false)}
-                  className={`flex-1 py-3 rounded-lg ${
-                    !gameSettings.doubleOut
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                  }`}
+                  style={{
+                    background: !gameSettings.doubleOut ? 'var(--accent)' : 'var(--secondary)',
+                    color: !gameSettings.doubleOut ? 'var(--text)' : 'var(--bg)',
+                  }}
+                  className="flex-1 py-3 rounded-lg transition-colors"
                 >
                   Singel ut
                 </button>
@@ -165,27 +170,27 @@ export default function GameSetup() {
         
         {gameSettings.gameMode === 'aroundTheClock' && (
           <div className="mb-6">
-            <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block mb-2" style={{ color: 'var(--detail)' }}>
               Inkludera bullseye:
             </label>
             <div className="flex space-x-2 mb-3">
               <button
                 onClick={() => handleIncludeOuterBullChange(true)}
-                className={`flex-1 py-3 rounded-lg ${
-                  gameSettings.includeOuterBull
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                }`}
+                style={{
+                  background: gameSettings.includeOuterBull ? 'var(--accent)' : 'var(--secondary)',
+                  color: gameSettings.includeOuterBull ? 'var(--text)' : 'var(--bg)',
+                }}
+                className="flex-1 py-3 rounded-lg transition-colors"
               >
                 Ja
               </button>
               <button
                 onClick={() => handleIncludeOuterBullChange(false)}
-                className={`flex-1 py-3 rounded-lg ${
-                  !gameSettings.includeOuterBull
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                }`}
+                style={{
+                  background: !gameSettings.includeOuterBull ? 'var(--accent)' : 'var(--secondary)',
+                  color: !gameSettings.includeOuterBull ? 'var(--text)' : 'var(--bg)',
+                }}
+                className="flex-1 py-3 rounded-lg transition-colors"
               >
                 Nej (1-20)
               </button>
@@ -193,27 +198,27 @@ export default function GameSetup() {
             
             {gameSettings.includeOuterBull && (
               <div>
-                <label className="block text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block mb-2" style={{ color: 'var(--detail)' }}>
                   Typ av bullseye:
                 </label>
                 <div className="flex space-x-2">
                   <button
                     onClick={() => handleCombinedBullseyeChange(false)}
-                    className={`flex-1 py-3 rounded-lg ${
-                      !gameSettings.combinedBullseye
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                    }`}
+                    style={{
+                      background: !gameSettings.combinedBullseye ? 'var(--accent)' : 'var(--secondary)',
+                      color: !gameSettings.combinedBullseye ? 'var(--text)' : 'var(--bg)',
+                    }}
+                    className="flex-1 py-3 rounded-lg transition-colors"
                   >
                     Separata (21-22)
                   </button>
                   <button
                     onClick={() => handleCombinedBullseyeChange(true)}
-                    className={`flex-1 py-3 rounded-lg ${
-                      gameSettings.combinedBullseye
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
-                    }`}
+                    style={{
+                      background: gameSettings.combinedBullseye ? 'var(--accent)' : 'var(--secondary)',
+                      color: gameSettings.combinedBullseye ? 'var(--text)' : 'var(--bg)',
+                    }}
+                    className="flex-1 py-3 rounded-lg transition-colors"
                   >
                     Kombinerad (Y/B)
                   </button>
@@ -224,7 +229,7 @@ export default function GameSetup() {
         )}
         
         <div className="mb-6">
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block mb-2" style={{ color: 'var(--detail)' }}>
             Spelarnamn:
           </label>
           <div className="space-y-3">
@@ -235,7 +240,12 @@ export default function GameSetup() {
                 value={player.name}
                 onChange={(e) => handleNameChange(index, e.target.value)}
                 placeholder={`Spelare ${index + 1}`}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-white"
+                className="w-full p-3 border rounded-lg"
+                style={{
+                  background: 'var(--secondary)',
+                  color: 'var(--bg)',
+                  borderColor: 'var(--accent)',
+                }}
               />
             ))}
           </div>

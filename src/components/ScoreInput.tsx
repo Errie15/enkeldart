@@ -152,7 +152,8 @@ export default function ScoreInput() {
     <button
       key={num}
       onClick={() => handleNumberClick(num)}
-      className="w-full h-12 bg-blue-600 text-white text-xl font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 shadow"
+      style={{ background: 'var(--secondary)', color: 'var(--bg)' }}
+      className="w-full h-12 font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 shadow"
       disabled={isSubmitting || playerChangePending.current}
     >
       {num}
@@ -161,19 +162,16 @@ export default function ScoreInput() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
+      <div className="p-4 rounded-lg shadow" style={{ background: 'var(--bg)' }}>
         <div className="mb-2 flex justify-between items-center">
-          <span className="text-md font-bold text-gray-800 dark:text-white">Kast kvar: {throwsLeft}</span>
+          <span className="text-md font-bold" style={{ color: 'var(--detail)' }}>Kast kvar: {throwsLeft}</span>
         </div>
         <div className="mb-3 flex justify-between items-center">
           {throwsLeft < 3 && !pendingNextPlayer && (
             <button
               onClick={handleNextPlayer}
-              className={`px-3 py-1 text-white font-bold rounded-lg text-sm ml-auto ${
-                isSubmitting || playerChangePending.current
-                  ? 'bg-gray-400 dark:bg-gray-700' 
-                  : 'bg-gray-600 hover:bg-gray-700'
-              }`}
+              style={{ background: 'var(--secondary)', color: 'var(--bg)' }}
+              className="px-3 py-1 font-bold rounded-lg text-sm ml-auto"
               disabled={isSubmitting || playerChangePending.current}
             >
               {isSubmitting ? 'Byter...' : 'Nästa spelare'}
@@ -182,22 +180,22 @@ export default function ScoreInput() {
         </div>
 
         {statusMessage && (
-          <div className="mb-3 p-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-lg text-sm font-medium text-center">
+          <div className="mb-3 p-2 rounded-lg text-sm font-medium text-center" style={{ background: 'var(--accent)', color: 'var(--text)' }}>
             {statusMessage}
           </div>
         )}
 
-        <div className="bg-white dark:bg-gray-700 p-4 rounded-lg mb-4 h-16 flex items-center justify-between">
+        <div className="p-4 rounded-lg mb-4 h-16 flex items-center justify-between" style={{ background: 'var(--secondary)', color: 'var(--bg)' }}>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold dark:text-white">{currentScore || '0'}</span>
+            <span className="text-2xl font-bold" style={{ color: 'var(--bg)' }}>{currentScore || '0'}</span>
             {calculatedValue !== null && (
-              <span className="text-sm text-gray-600 dark:text-gray-300">= {calculatedValue}</span>
+              <span className="text-sm" style={{ color: 'var(--detail)' }}>= {calculatedValue}</span>
             )}
           </div>
           {currentScore && (
             <button 
               onClick={handleDelete}
-              className="text-red-500 hover:text-red-700"
+              style={{ color: 'var(--accent)' }}
               disabled={isSubmitting || playerChangePending.current}
             >
               ⌫
@@ -214,11 +212,8 @@ export default function ScoreInput() {
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={handleMiss}
-            className={`w-full h-12 text-white font-bold rounded-lg shadow ${
-              isSubmitting || playerChangePending.current 
-                ? 'bg-red-400 dark:bg-red-700' 
-                : 'bg-red-600 hover:bg-red-700 active:bg-red-800'
-            }`}
+            style={{ background: 'var(--accent)', color: 'var(--text)' }}
+            className="w-full h-12 font-bold rounded-lg shadow"
             disabled={throwsLeft === 0 || isSubmitting || playerChangePending.current}
           >
             {isSubmitting ? 'Registrerar...' : 'Miss'}
@@ -228,7 +223,8 @@ export default function ScoreInput() {
           
           <button
             onClick={handleOperatorClick}
-            className="w-full h-12 bg-gray-500 text-white text-xl font-bold rounded-lg hover:bg-gray-600 active:bg-gray-700 shadow"
+            style={{ background: 'var(--secondary)', color: 'var(--bg)' }}
+            className="w-full h-12 text-xl font-bold rounded-lg shadow"
             disabled={isSubmitting || playerChangePending.current}
           >
             x
@@ -238,11 +234,8 @@ export default function ScoreInput() {
         <div className="mt-2">
           <button
             onClick={handleSubmit}
-            className={`w-full h-12 text-white text-md font-bold rounded-lg shadow ${
-              isSubmitting || playerChangePending.current
-                ? 'bg-green-400 dark:bg-green-700' 
-                : 'bg-green-600 hover:bg-green-700 active:bg-green-800'
-            }`}
+            style={{ background: 'var(--highlight)', color: 'var(--text)' }}
+            className="w-full h-12 text-md font-bold rounded-lg shadow"
             disabled={throwsLeft === 0 || isSubmitting || playerChangePending.current || !currentScore}
           >
             {isSubmitting ? 'Registrerar...' : 'OK'}
