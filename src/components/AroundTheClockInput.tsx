@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useGameContext } from '../contexts/GameContext';
 
 export default function AroundTheClockInput() {
@@ -8,48 +8,43 @@ export default function AroundTheClockInput() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [throwsLeft, setThrowsLeft] = useState(3);
   const [statusMessage, setStatusMessage] = useState('');
+  const [pendingNextPlayer, setPendingNextPlayer] = useState(false);
   
+  useEffect(() => {
+    if (!currentPlayer) return;
+    if (pendingNextPlayer && throwsLeft === 0) {
+      setStatusMessage('Turen går vidare...');
+      setTimeout(() => {
+        nextPlayer();
+        setThrowsLeft(3);
+        setStatusMessage('');
+        setIsSubmitting(false);
+        setPendingNextPlayer(false);
+      }, 800);
+    }
+  }, [pendingNextPlayer, throwsLeft, nextPlayer, currentPlayer]);
+
   if (!currentPlayer) return null;
   
   const handleNumberClick = (num: number) => {
     if (isSubmitting) return;
-    
     setIsSubmitting(true);
     const isLastThrow = throwsLeft === 1;
-    
-    // Registrera träffen
     registerHit(num);
-    
-    // Uppdatera antal kast kvar
     setThrowsLeft(prev => Math.max(0, prev - 1));
-    
-    // Om spelaren träffade sitt mål, visa meddelande
     if (num === currentPlayer.currentTarget) {
       setStatusMessage(`Träff på ${num}! Nästa mål: ${currentPlayer.currentTarget! + 1}`);
-      
       setTimeout(() => {
         setIsSubmitting(false);
-        
         if (isLastThrow) {
-          setStatusMessage('Turen går vidare...');
-          setTimeout(() => {
-            nextPlayer();
-            setThrowsLeft(3);
-            setStatusMessage('');
-          }, 800);
+          setPendingNextPlayer(true);
         }
       }, 500);
     } else {
       setTimeout(() => {
         setIsSubmitting(false);
-        
         if (isLastThrow) {
-          setStatusMessage('Turen går vidare...');
-          setTimeout(() => {
-            nextPlayer();
-            setThrowsLeft(3);
-            setStatusMessage('');
-          }, 800);
+          setPendingNextPlayer(true);
         }
       }, 300);
     }

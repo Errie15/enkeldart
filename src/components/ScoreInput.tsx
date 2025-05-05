@@ -12,15 +12,21 @@ export default function ScoreInput() {
   const [statusMessage, setStatusMessage] = useState('');
   const [calculatedValue, setCalculatedValue] = useState<number | null>(null);
   const playerChangePending = useRef(false);
+  const [pendingNextPlayer, setPendingNextPlayer] = useState(false);
+  const lastPlayerId = useRef<string | number | null>(null);
 
   useEffect(() => {
-    // När en ny spelare börjar -> alltid 3 kast kvar
-    setThrowsLeft(3);
-    setStatusMessage('');
-    setIsSubmitting(false);
-    playerChangePending.current = false;
-    setCurrentScore('');
-    setCalculatedValue(null);
+    // Återställ kast kvar endast när det är en ny spelare
+    if (currentPlayer && currentPlayer.id !== lastPlayerId.current) {
+      setThrowsLeft(3);
+      setStatusMessage('');
+      setIsSubmitting(false);
+      playerChangePending.current = false;
+      setCurrentScore('');
+      setCalculatedValue(null);
+      setPendingNextPlayer(false);
+      lastPlayerId.current = currentPlayer.id;
+    }
   }, [currentPlayer]);
   
   useEffect(() => {
@@ -32,6 +38,20 @@ export default function ScoreInput() {
       setCalculatedValue(null);
     }
   }, [currentScore]);
+
+  useEffect(() => {
+    if (throwsLeft === 0) {
+      setStatusMessage('Turen går vidare...');
+      setTimeout(() => {
+        nextPlayer();
+        setThrowsLeft(3);
+        setStatusMessage('');
+        setIsSubmitting(false);
+        setPendingNextPlayer(false);
+        playerChangePending.current = false;
+      }, 800);
+    }
+  }, [throwsLeft, nextPlayer]);
 
   const handleNumberClick = (num: number) => {
     if (isSubmitting || playerChangePending.current || currentScore.length >= 10) return;
@@ -91,11 +111,8 @@ export default function ScoreInput() {
 
       if (isLastThrow) {
         playerChangePending.current = true;
-        setStatusMessage(`${scoreToRegister} poäng registrerat! Turen går vidare...`);
-        setTimeout(() => {
-          nextPlayer();
-          setIsSubmitting(false);
-        }, 600);
+        setStatusMessage(`${scoreToRegister} poäng registrerat!`);
+        setPendingNextPlayer(true);
       } else {
         setIsSubmitting(false);
       }
@@ -113,11 +130,8 @@ export default function ScoreInput() {
 
       if (isLastThrow) {
         playerChangePending.current = true;
-        setStatusMessage('Miss registrerad! Turen går vidare...');
-        setTimeout(() => {
-          nextPlayer();
-          setIsSubmitting(false);
-        }, 600);
+        setStatusMessage('Miss registrerad!');
+        setPendingNextPlayer(true);
       } else {
         setIsSubmitting(false);
       }
@@ -148,14 +162,14 @@ export default function ScoreInput() {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow">
+        <div className="mb-2 flex justify-between items-center">
+          <span className="text-md font-bold text-gray-800 dark:text-white">Kast kvar: {throwsLeft}</span>
+        </div>
         <div className="mb-3 flex justify-between items-center">
-          <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Kast kvar: {throwsLeft}
-          </div>
-          {throwsLeft < 3 && (
+          {throwsLeft < 3 && !pendingNextPlayer && (
             <button
               onClick={handleNextPlayer}
-              className={`px-3 py-1 text-white font-bold rounded-lg text-sm ${
+              className={`px-3 py-1 text-white font-bold rounded-lg text-sm ml-auto ${
                 isSubmitting || playerChangePending.current
                   ? 'bg-gray-400 dark:bg-gray-700' 
                   : 'bg-gray-600 hover:bg-gray-700'
