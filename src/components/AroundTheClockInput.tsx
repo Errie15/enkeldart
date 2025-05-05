@@ -65,13 +65,12 @@ export default function AroundTheClockInput() {
   // Skapa layout för dartbrädan
   const renderNumbers = () => {
     const numbers = [];
-    
+
     // Första raden: 1-8
     const firstRow = [];
     for (let i = 1; i <= 8; i++) {
       const isTarget = i === currentPlayer.currentTarget;
       const isCompleted = currentPlayer.hitsInOrder?.includes(i);
-      
       firstRow.push(
         <button
           key={i}
@@ -80,23 +79,22 @@ export default function AroundTheClockInput() {
           style={{
             background: isTarget ? 'var(--secondary)' : 'var(--accent)',
             color: isTarget ? 'var(--accent)' : 'var(--text)',
-            border: isTarget ? '3px solid var(--detail)' : 'none',
+            border: isTarget ? '2px solid var(--detail)' : 'none',
             fontWeight: isTarget ? 700 : 500,
             opacity: isCompleted ? 0.5 : 1,
           }}
-          className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
+          className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center"
         >
           {i}
         </button>
       );
     }
-    
-    // Andra raden: 9-16
+
+    // Andra raden: 9-12
     const secondRow = [];
-    for (let i = 9; i <= 16; i++) {
+    for (let i = 9; i <= 12; i++) {
       const isTarget = i === currentPlayer.currentTarget;
       const isCompleted = currentPlayer.hitsInOrder?.includes(i);
-      
       secondRow.push(
         <button
           key={i}
@@ -105,23 +103,22 @@ export default function AroundTheClockInput() {
           style={{
             background: isTarget ? 'var(--secondary)' : 'var(--accent)',
             color: isTarget ? 'var(--accent)' : 'var(--text)',
-            border: isTarget ? '3px solid var(--detail)' : 'none',
+            border: isTarget ? '2px solid var(--detail)' : 'none',
             fontWeight: isTarget ? 700 : 500,
             opacity: isCompleted ? 0.5 : 1,
           }}
-          className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
+          className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center"
         >
           {i}
         </button>
       );
     }
-    
-    // Tredje raden: 17-20 (och bulls om aktiverat)
+
+    // Tredje raden: 13-16
     const thirdRow = [];
-    for (let i = 17; i <= 20; i++) {
+    for (let i = 13; i <= 16; i++) {
       const isTarget = i === currentPlayer.currentTarget;
       const isCompleted = currentPlayer.hitsInOrder?.includes(i);
-      
       thirdRow.push(
         <button
           key={i}
@@ -130,25 +127,47 @@ export default function AroundTheClockInput() {
           style={{
             background: isTarget ? 'var(--secondary)' : 'var(--accent)',
             color: isTarget ? 'var(--accent)' : 'var(--text)',
-            border: isTarget ? '3px solid var(--detail)' : 'none',
+            border: isTarget ? '2px solid var(--detail)' : 'none',
             fontWeight: isTarget ? 700 : 500,
             opacity: isCompleted ? 0.5 : 1,
           }}
-          className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
+          className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center"
         >
           {i}
         </button>
       );
     }
-    
-    // Lägg till bullseye-knappar om de behövs, i en separat rad
+
+    // Fjärde raden: 17-20
+    const fourthRow = [];
+    for (let i = 17; i <= 20; i++) {
+      const isTarget = i === currentPlayer.currentTarget;
+      const isCompleted = currentPlayer.hitsInOrder?.includes(i);
+      fourthRow.push(
+        <button
+          key={i}
+          onClick={() => handleNumberClick(i)}
+          disabled={isSubmitting || isCompleted || throwsLeft === 0}
+          style={{
+            background: isTarget ? 'var(--secondary)' : 'var(--accent)',
+            color: isTarget ? 'var(--accent)' : 'var(--text)',
+            border: isTarget ? '2px solid var(--detail)' : 'none',
+            fontWeight: isTarget ? 700 : 500,
+            opacity: isCompleted ? 0.5 : 1,
+          }}
+          className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center"
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Bullseye-rad
     const bullsRow = [];
     if (gameSettings.includeOuterBull) {
       if (gameSettings.combinedBullseye) {
-        // Kombinerad bull (21) med delad färg (grön/röd)
         const isBullTarget = currentPlayer.currentTarget === 21;
         const isBullCompleted = currentPlayer.hitsInOrder?.includes(21);
-        
         bullsRow.push(
           <button
             key="combinedBull"
@@ -157,13 +176,13 @@ export default function AroundTheClockInput() {
             style={{
               background: isBullTarget ? 'var(--secondary)' : 'var(--accent)',
               color: isBullTarget ? 'var(--accent)' : 'var(--text)',
-              border: isBullTarget ? '3px solid var(--detail)' : 'none',
+              border: isBullTarget ? '2px solid var(--detail)' : 'none',
               fontWeight: isBullTarget ? 700 : 500,
               opacity: isBullCompleted ? 0.5 : 1,
             }}
-            className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center relative overflow-hidden"
+            className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center relative overflow-hidden"
           >
-            {isBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
+            {isBullTarget && <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse"></div>}
             <div className="absolute inset-0 flex">
               <div className="w-1/2 h-full bg-green-600"></div>
               <div className="w-1/2 h-full bg-red-600"></div>
@@ -175,7 +194,6 @@ export default function AroundTheClockInput() {
         // Yttre bull (21)
         const isOuterBullTarget = currentPlayer.currentTarget === 21;
         const isOuterBullCompleted = currentPlayer.hitsInOrder?.includes(21);
-        
         bullsRow.push(
           <button
             key="outerBull"
@@ -184,21 +202,19 @@ export default function AroundTheClockInput() {
             style={{
               background: isOuterBullTarget ? 'var(--secondary)' : 'var(--accent)',
               color: isOuterBullTarget ? 'var(--accent)' : 'var(--text)',
-              border: isOuterBullTarget ? '3px solid var(--detail)' : 'none',
+              border: isOuterBullTarget ? '2px solid var(--detail)' : 'none',
               fontWeight: isOuterBullTarget ? 700 : 500,
               opacity: isOuterBullCompleted ? 0.5 : 1,
             }}
-            className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center"
+            className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center"
           >
-            {isOuterBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
+            {isOuterBullTarget && <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse"></div>}
             Yttre
           </button>
         );
-        
         // Inner bull (22)
         const isInnerBullTarget = currentPlayer.currentTarget === 22;
         const isInnerBullCompleted = currentPlayer.hitsInOrder?.includes(22);
-        
         bullsRow.push(
           <button
             key="innerBull"
@@ -207,29 +223,28 @@ export default function AroundTheClockInput() {
             style={{
               background: isInnerBullTarget ? 'var(--secondary)' : 'var(--accent)',
               color: isInnerBullTarget ? 'var(--accent)' : 'var(--text)',
-              border: isInnerBullTarget ? '3px solid var(--detail)' : 'none',
+              border: isInnerBullTarget ? '2px solid var(--detail)' : 'none',
               fontWeight: isInnerBullTarget ? 700 : 500,
               opacity: isInnerBullCompleted ? 0.5 : 1,
             }}
-            className="w-12 h-12 rounded-full text-lg font-bold flex items-center justify-center relative"
+            className="w-10 h-10 rounded-full text-base font-bold flex items-center justify-center relative"
           >
-            {isInnerBullTarget && <div className="absolute inset-0 border-4 border-yellow-400 rounded-full animate-pulse"></div>}
+            {isInnerBullTarget && <div className="absolute inset-0 border-2 border-yellow-400 rounded-full animate-pulse"></div>}
             Bull
           </button>
         );
       }
     }
-    
+
     numbers.push(
-      <div key="row1" className="flex justify-center gap-2 mb-3">{firstRow}</div>,
-      <div key="row2" className="flex justify-center gap-2 mb-3">{secondRow}</div>,
-      <div key="row3" className="flex justify-center gap-2 mb-3">{thirdRow}</div>
+      <div key="row1" className="flex justify-center gap-1 mb-2">{firstRow}</div>,
+      <div key="row2" className="flex justify-center gap-1 mb-2">{secondRow}</div>,
+      <div key="row3" className="flex justify-center gap-1 mb-2">{thirdRow}</div>,
+      <div key="row4" className="flex justify-center gap-1 mb-2">{fourthRow}</div>
     );
-    
     if (bullsRow.length > 0) {
-      numbers.push(<div key="bulls" className="flex justify-center gap-2">{bullsRow}</div>);
+      numbers.push(<div key="bulls" className="flex justify-center gap-1">{bullsRow}</div>);
     }
-    
     return numbers;
   };
   
