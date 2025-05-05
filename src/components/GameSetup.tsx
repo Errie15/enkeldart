@@ -4,7 +4,15 @@ import React, { useState } from 'react';
 import { useGameContext } from '../contexts/GameContext';
 
 export default function GameSetup() {
-  const { players, setPlayerCount, updatePlayerName, startGame, gameSettings, setDoubleOut } = useGameContext();
+  const { 
+    players, 
+    setPlayerCount, 
+    updatePlayerName, 
+    startGame, 
+    gameSettings, 
+    setDoubleOut,
+    setInitialScore
+  } = useGameContext();
   const [tempCount, setTempCount] = useState(players.length.toString());
 
   const handlePlayerCountChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -21,6 +29,10 @@ export default function GameSetup() {
 
   const handleDoubleOutChange = (value: boolean) => {
     setDoubleOut(value);
+  };
+
+  const handleInitialScoreChange = (score: number) => {
+    setInitialScore(score);
   };
 
   return (
@@ -43,6 +55,34 @@ export default function GameSetup() {
               </option>
             ))}
           </select>
+        </div>
+        
+        <div className="mb-6">
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Startpoäng:
+          </label>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => handleInitialScoreChange(301)}
+              className={`flex-1 py-3 rounded-lg ${
+                gameSettings.initialScore === 301
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
+              }`}
+            >
+              301
+            </button>
+            <button
+              onClick={() => handleInitialScoreChange(501)}
+              className={`flex-1 py-3 rounded-lg ${
+                gameSettings.initialScore === 501
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white'
+              }`}
+            >
+              501
+            </button>
+          </div>
         </div>
         
         <div className="mb-6">

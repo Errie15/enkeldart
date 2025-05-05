@@ -12,6 +12,7 @@ export type Player = {
 
 export type GameSettings = {
   doubleOut: boolean;
+  initialScore: number; // 301 eller 501
 };
 
 export type PlayerStatistics = {

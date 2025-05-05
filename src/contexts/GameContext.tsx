@@ -14,6 +14,7 @@ interface GameContextType {
   startGame: () => void;
   resetGame: () => void;
   setDoubleOut: (doubleOut: boolean) => void;
+  setInitialScore: (score: number) => void;
   addScore: (score: number) => void;
   nextPlayer: () => void;
   currentPlayer: Player | null;
@@ -29,7 +30,10 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export function GameProvider({ children }: { children: ReactNode }) {
   const [players, setPlayers] = useState<Player[]>([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [gameSettings, setGameSettings] = useState<GameSettings>({ doubleOut: true });
+  const [gameSettings, setGameSettings] = useState<GameSettings>({ 
+    doubleOut: true,
+    initialScore: 501
+  });
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'finished'>('setup');
   const [winner, setWinner] = useState<Player | null>(null);
   const [showStats, setShowStats] = useState(false);
@@ -38,14 +42,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   // Initialize with default players
   useEffect(() => {
     if (players.length === 0) {
-      setPlayers(createPlayers(1));
+      setPlayers(createPlayers(1, gameSettings.initialScore));
     }
-  }, [players.length]);
+  }, [players.length, gameSettings.initialScore]);
 
   const currentPlayer = players[currentPlayerIndex] || null;
 
   const setPlayerCount = (count: number) => {
-    setPlayers(createPlayers(count));
+    setPlayers(createPlayers(count, gameSettings.initialScore));
   };
 
   const updatePlayerName = (index: number, name: string) => {
@@ -60,7 +64,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   };
 
   const resetGame = () => {
-    setPlayers(createPlayers(players.length));
+    setPlayers(createPlayers(players.length, gameSettings.initialScore));
     setCurrentPlayerIndex(0);
     setGameState('setup');
     setWinner(null);
@@ -70,6 +74,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const setDoubleOut = (doubleOut: boolean) => {
     setGameSettings({ ...gameSettings, doubleOut });
+  };
+
+  const setInitialScore = (initialScore: number) => {
+    setGameSettings({ ...gameSettings, initialScore });
+    // När vi ändrar initialScore behöver vi uppdatera alla spelare
+    setPlayers(createPlayers(players.length, initialScore));
   };
 
   const addScore = (points: number) => {
@@ -160,6 +170,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         startGame,
         resetGame,
         setDoubleOut,
+        setInitialScore,
         addScore,
         nextPlayer,
         currentPlayer,
