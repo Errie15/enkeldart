@@ -12,6 +12,7 @@ declare global {
     lang: string;
     interimResults: boolean;
     maxAlternatives: number;
+    continuous: boolean;
     start(): void;
     stop(): void;
     onresult: ((event: SpeechRecognitionEvent) => void) | null;
@@ -20,12 +21,13 @@ declare global {
   }
   interface SpeechRecognitionEvent extends Event {
     results: {
-      0: {
+      [index: number]: {
         0: {
           transcript: string;
         };
       };
     };
+    resultIndex: number;
   }
   interface SpeechRecognitionErrorEvent extends Event {
     error: string;
@@ -42,7 +44,7 @@ export interface UseSpeechRecognitionResult {
   stopListening: () => void;
 }
 
-export function useSpeechRecognition(): UseSpeechRecognitionResult {
+export function useSpeechRecognition(continuous = false): UseSpeechRecognitionResult {
   const [transcript, setTranscript] = React.useState('');
   const [status, setStatus] = React.useState<SpeechRecognitionStatus>('idle');
   const [error, setError] = React.useState<string | null>(null);
@@ -69,25 +71,35 @@ export function useSpeechRecognition(): UseSpeechRecognitionResult {
     recognition.lang = 'sv-SE';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+    recognition.continuous = continuous;
     recognitionRef.current = recognition;
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const result = event.results[0][0].transcript;
-      setTranscript(result);
-      setStatus('idle');
+      let fullTranscript = '';
+      const results = event.results as unknown as Array<{ 0: { transcript: string } }>;
+      for (let i = event.resultIndex; i < Object.keys(event.results).length; ++i) {
+        fullTranscript += results[i][0].transcript + ' ';
+      }
+      setTranscript(fullTranscript.trim());
+      setStatus('listening');
     };
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       setError('Fel vid taligenkänning: ' + event.error);
       setStatus('error');
     };
     recognition.onend = () => {
-      setStatus('idle');
+      if (continuous) {
+        recognition.start(); // Starta om automatiskt
+        setStatus('listening');
+      } else {
+        setStatus('idle');
+      }
     };
     // Clean up
     return () => {
       recognition.stop();
     };
-  }, []);
+  }, [continuous]);
 
   const startListening = React.useCallback(() => {
     setTranscript('');

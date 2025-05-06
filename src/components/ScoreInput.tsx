@@ -15,7 +15,7 @@ export default function ScoreInput() {
   const playerChangePending = useRef(false);
   const [pendingNextPlayer, setPendingNextPlayer] = useState(false);
   const lastPlayerId = useRef<string | number | null>(null);
-  const speech = useSpeechRecognition();
+  const speech = useSpeechRecognition(true);
 
   useEffect(() => {
     // Återställ kast kvar endast när det är en ny spelare
@@ -55,13 +55,55 @@ export default function ScoreInput() {
     }
   }, [throwsLeft, nextPlayer]);
 
+  const registerScore = React.useCallback((score: number) => {
+    addScore(score);
+    setCurrentScore('');
+    setCalculatedValue(null);
+    setThrowsLeft(prev => Math.max(0, prev - 1));
+  }, [addScore]);
+
   useEffect(() => {
     if (speech.transcript) {
-      // Försök tolka talet som en siffra (eller uttryck)
-      const cleaned = speech.transcript.replace(/[^0-9x]/gi, '').replace(/x/gi, 'x');
-      if (cleaned) setCurrentScore(cleaned);
+      // Dela upp på mellanrum och filtrera ut ogiltiga
+      const parts = speech.transcript
+        .split(/\s+/)
+        .map(p => p.replace(/[^0-9x]/gi, '').replace(/x/gi, 'x'))
+        .filter(Boolean);
+      if (parts.length === 0) return;
+
+      // Om vi redan har kast kvar < 3, fortsätt på nuvarande
+      let scores: string[] = [];
+      if (throwsLeft < 3 && currentScore) {
+        scores = [currentScore, ...parts];
+      } else {
+        scores = parts;
+      }
+
+      // Om vi har 3 eller fler, registrera dem direkt
+      if (scores.length >= 3) {
+        for (let i = 0; i < 3; i++) {
+          const val = scores[i];
+          if (!val) continue;
+          let scoreToRegister: number;
+          if (/[x]/.test(val)) {
+            const evalResult = evaluateExpression(val);
+            scoreToRegister = typeof evalResult === 'number' && !isNaN(evalResult) ? evalResult : 0;
+          } else {
+            scoreToRegister = parseInt(val);
+          }
+          if (!isNaN(scoreToRegister) && scoreToRegister >= 0 && scoreToRegister <= 180) {
+            registerScore(scoreToRegister);
+          }
+        }
+        setCurrentScore('');
+        setCalculatedValue(null);
+        setThrowsLeft(0); // Tvinga turen att gå vidare
+      } else {
+        // Annars, bygg upp currentScore
+        setCurrentScore(scores.join(' '));
+      }
     }
-  }, [speech.transcript]);
+  }, [speech.transcript, currentScore, registerScore, throwsLeft]);
 
   const handleNumberClick = (num: number) => {
     if (isSubmitting || playerChangePending.current || currentScore.length >= 10) return;
@@ -85,13 +127,6 @@ export default function ScoreInput() {
     setCurrentScore(currentScore.slice(0, -1));
   };
 
-  const registerScore = (score: number) => {
-    addScore(score);
-    setCurrentScore('');
-    setCalculatedValue(null);
-    setThrowsLeft(prev => Math.max(0, prev - 1));
-  };
-  
   const handleSubmit = () => {
     if (isSubmitting || playerChangePending.current) return;
     if (!currentScore) return;
