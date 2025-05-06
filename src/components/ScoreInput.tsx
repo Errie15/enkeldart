@@ -16,6 +16,7 @@ export default function ScoreInput() {
   const [pendingNextPlayer, setPendingNextPlayer] = useState(false);
   const lastPlayerId = useRef<string | number | null>(null);
   const speech = useSpeechRecognition(true);
+  const lastProcessedTranscript = useRef('');
 
   useEffect(() => {
     // Återställ kast kvar endast när det är en ny spelare
@@ -65,6 +66,8 @@ export default function ScoreInput() {
   useEffect(() => {
     if (speech.transcript) {
       if (throwsLeft === 0) return; // Blockera fler än 3 kast per runda
+      if (speech.transcript === lastProcessedTranscript.current) return; // Undvik dubbletter
+      lastProcessedTranscript.current = speech.transcript;
       // Om användaren säger t.ex. "12 OK" eller "12 ja" eller "12 kör"
       const normalized = speech.transcript.toLowerCase().trim();
       const match = normalized.match(/(\d{1,3})\s*(ok|ja|kör)?$/i);
@@ -79,8 +82,11 @@ export default function ScoreInput() {
             setCurrentScore('');
             setCalculatedValue(null);
             setThrowsLeft(prev => Math.max(0, prev - 1));
-            // Starta om lyssning direkt
-            setTimeout(() => speech.startListening(), 500);
+            // Starta om lyssning direkt och rensa transcript
+            setTimeout(() => {
+              speech.startListening();
+              lastProcessedTranscript.current = '';
+            }, 500);
           }
           return;
         }
@@ -123,7 +129,14 @@ export default function ScoreInput() {
         setCurrentScore('');
       }
       setCalculatedValue(null);
-      if (kast === 0) setThrowsLeft(0); // Tvinga turen att gå vidare
+      if (kast === 0) {
+        setThrowsLeft(0); // Tvinga turen att gå vidare
+        // Rensa transcript och ref efter runda
+        setTimeout(() => {
+          speech.startListening();
+          lastProcessedTranscript.current = '';
+        }, 500);
+      }
     }
   }, [speech.transcript, currentScore, registerScore, throwsLeft, speech]);
 
