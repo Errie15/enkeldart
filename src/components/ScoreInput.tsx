@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameContext } from '../contexts/GameContext';
 import { evaluateExpression } from '../utils/mathExpressionParser';
+import { useSpeechRecognition } from '../utils/speechRecognition';
 
 export default function ScoreInput() {
   const { addScore, currentPlayer, nextPlayer } = useGameContext();
@@ -14,6 +15,7 @@ export default function ScoreInput() {
   const playerChangePending = useRef(false);
   const [pendingNextPlayer, setPendingNextPlayer] = useState(false);
   const lastPlayerId = useRef<string | number | null>(null);
+  const speech = useSpeechRecognition();
 
   useEffect(() => {
     // Återställ kast kvar endast när det är en ny spelare
@@ -52,6 +54,14 @@ export default function ScoreInput() {
       }, 800);
     }
   }, [throwsLeft, nextPlayer]);
+
+  useEffect(() => {
+    if (speech.transcript) {
+      // Försök tolka talet som en siffra (eller uttryck)
+      const cleaned = speech.transcript.replace(/[^0-9x]/gi, '').replace(/x/gi, 'x');
+      if (cleaned) setCurrentScore(cleaned);
+    }
+  }, [speech.transcript]);
 
   const handleNumberClick = (num: number) => {
     if (isSubmitting || playerChangePending.current || currentScore.length >= 10) return;
@@ -240,6 +250,24 @@ export default function ScoreInput() {
           >
             {isSubmitting ? 'Registrerar...' : 'OK'}
           </button>
+        </div>
+
+        <div className="flex items-center gap-2 mb-2">
+          <button
+            type="button"
+            onClick={speech.status === 'listening' ? speech.stopListening : speech.startListening}
+            style={{ background: 'var(--accent)', color: 'var(--text)', border: 'none', outline: 'none' }}
+            className={`rounded-full p-2 shadow ${speech.status === 'listening' ? 'animate-pulse' : ''}`}
+            aria-label={speech.status === 'listening' ? 'Stoppa röstinmatning' : 'Starta röstinmatning'}
+          >
+            {speech.status === 'listening' ? '🎤...' : '🎤'}
+          </button>
+          <span className="text-sm font-medium" style={{ color: 'var(--detail)' }}>
+            {speech.status === 'listening' && 'Lyssnar...'}
+            {speech.status === 'unsupported' && 'Taligenkänning stöds ej'}
+            {speech.status === 'error' && (speech.error || 'Fel vid taligenkänning')}
+            {speech.status === 'idle' && speech.transcript && `Hörde: "${speech.transcript}"`}
+          </span>
         </div>
       </div>
     </div>
