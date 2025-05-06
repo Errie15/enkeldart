@@ -63,14 +63,14 @@ export default function AroundTheClockInput() {
     }, 500);
   };
   
-  // Lägg till funktion för miss (bom)
+  // Lägg till funktion för miss (Miss)
   const handleMissClick = () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     const isLastThrow = throwsLeft === 1;
     registerHit(0); // 0 betyder miss
     setThrowsLeft(prev => Math.max(0, prev - 1));
-    setStatusMessage('Bom!');
+    setStatusMessage('Miss!');
     setTimeout(() => {
       setIsSubmitting(false);
       if (isLastThrow) {
@@ -374,7 +374,7 @@ export default function AroundTheClockInput() {
             }}
             className="flex items-center justify-center"
           >
-            BOM
+            Miss
           </button>
           <div>
             {renderNumbers()}
@@ -395,7 +395,7 @@ export default function AroundTheClockInput() {
             }}
             className="flex items-center justify-center"
           >
-            BOM
+            Miss
           </button>
         </div>
         
