@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useGameContext } from '../contexts/GameContext';
 import { evaluateExpression } from '../utils/mathExpressionParser';
 import { useSpeechRecognition } from '../utils/speechRecognition';
+import { textToNumber } from '../utils/textToNumber';
 
 export default function ScoreInput() {
   const { addScore, currentPlayer, nextPlayer } = useGameContext();
@@ -94,7 +95,13 @@ export default function ScoreInput() {
       // Annars, fallback till gamla logik för flera kast
       const parts = speech.transcript
         .split(/\s+/)
-        .map(p => p.replace(/[^0-9x]/gi, '').replace(/x/gi, 'x'))
+        .map(p => {
+          const num = textToNumber(p);
+          if (typeof num === 'number') return num.toString();
+          // Hantera multiplikation (t.ex. "tre gånger tjugo" -> "3x20")
+          if (p.toLowerCase() === 'gånger' || p.toLowerCase() === 'x') return 'x';
+          return '';
+        })
         .filter(Boolean);
       if (parts.length === 0) return;
 
@@ -115,6 +122,7 @@ export default function ScoreInput() {
           const evalResult = evaluateExpression(val);
           scoreToRegister = typeof evalResult === 'number' && !isNaN(evalResult) ? evalResult : 0;
         } else {
+          // Om det är en siffra i strängform
           scoreToRegister = parseInt(val);
         }
         if (!isNaN(scoreToRegister) && scoreToRegister >= 0 && scoreToRegister <= 180) {
