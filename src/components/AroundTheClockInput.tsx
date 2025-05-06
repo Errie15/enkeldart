@@ -82,7 +82,21 @@ export default function AroundTheClockInput() {
   // Hantera transcript från tal-till-text
   useEffect(() => {
     if (speech.transcript) {
-      // Dela upp på mellanrum och filtrera ut ogiltiga
+      // Om användaren säger t.ex. "12 OK" eller "12 ja" eller "12 kör"
+      const normalized = speech.transcript.toLowerCase().trim();
+      const match = normalized.match(/(\d{1,2})\s*(ok|ja|kör)?$/i);
+      if (match) {
+        const scoreStr = match[1];
+        const confirm = match[2];
+        const scoreToRegister = parseInt(scoreStr);
+        if (!isNaN(scoreToRegister) && scoreToRegister >= 0 && scoreToRegister <= 22 && confirm) {
+          handleNumberClick(scoreToRegister);
+          setStatusMessage(`${scoreToRegister} registrerat! (via röst)`);
+          setTimeout(() => speech.startListening(), 500);
+          return;
+        }
+      }
+      // Annars, fallback till gamla logik för flera kast
       const parts = speech.transcript
         .split(/\s+/)
         .map(p => p.replace(/[^0-9]/gi, ''))
@@ -97,7 +111,7 @@ export default function AroundTheClockInput() {
       }
       // Om färre än kast kvar, gör inget mer
     }
-  }, [speech.transcript, handleNumberClick, throwsLeft]);
+  }, [speech.transcript, handleNumberClick, throwsLeft, speech]);
 
   if (!currentPlayer) return null;
   

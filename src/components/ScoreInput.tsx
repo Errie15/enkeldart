@@ -64,7 +64,25 @@ export default function ScoreInput() {
 
   useEffect(() => {
     if (speech.transcript) {
-      // Dela upp på mellanrum och filtrera ut ogiltiga
+      // Om användaren säger t.ex. "12 OK" eller "12 ja" eller "12 kör"
+      const normalized = speech.transcript.toLowerCase().trim();
+      const match = normalized.match(/(\d{1,3})\s*(ok|ja|kör)?$/i);
+      if (match) {
+        const scoreStr = match[1];
+        const confirm = match[2];
+        const scoreToRegister = parseInt(scoreStr);
+        if (!isNaN(scoreToRegister) && scoreToRegister >= 0 && scoreToRegister <= 180 && confirm) {
+          registerScore(scoreToRegister);
+          setStatusMessage(`${scoreToRegister} poäng registrerat! (via röst)`);
+          setCurrentScore('');
+          setCalculatedValue(null);
+          setThrowsLeft(prev => Math.max(0, prev - 1));
+          // Starta om lyssning direkt
+          setTimeout(() => speech.startListening(), 500);
+          return;
+        }
+      }
+      // Annars, fallback till gamla logik för flera kast
       const parts = speech.transcript
         .split(/\s+/)
         .map(p => p.replace(/[^0-9x]/gi, '').replace(/x/gi, 'x'))
@@ -103,7 +121,7 @@ export default function ScoreInput() {
       setCalculatedValue(null);
       if (kast === 0) setThrowsLeft(0); // Tvinga turen att gå vidare
     }
-  }, [speech.transcript, currentScore, registerScore, throwsLeft]);
+  }, [speech.transcript, currentScore, registerScore, throwsLeft, speech]);
 
   const handleNumberClick = (num: number) => {
     if (isSubmitting || playerChangePending.current || currentScore.length >= 10) return;
