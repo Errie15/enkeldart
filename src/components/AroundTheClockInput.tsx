@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useGameContext } from '../contexts/GameContext';
+import { useSpeechRecognition } from '../utils/speechRecognition';
 
 export default function AroundTheClockInput() {
   const { registerHit, currentPlayer, nextPlayer, gameSettings } = useGameContext();
@@ -10,6 +11,8 @@ export default function AroundTheClockInput() {
   const [statusMessage, setStatusMessage] = useState('');
   const [pendingNextPlayer, setPendingNextPlayer] = useState(false);
   
+  const speech = useSpeechRecognition(true);
+
   useEffect(() => {
     if (!currentPlayer) return;
     if (pendingNextPlayer && throwsLeft === 0) {
@@ -24,10 +27,8 @@ export default function AroundTheClockInput() {
     }
   }, [pendingNextPlayer, throwsLeft, nextPlayer, currentPlayer]);
 
-  if (!currentPlayer) return null;
-  
-  const handleNumberClick = (num: number) => {
-    if (isSubmitting) return;
+  const handleNumberClick = useCallback((num: number) => {
+    if (isSubmitting || !currentPlayer) return;
     setIsSubmitting(true);
     const isLastThrow = throwsLeft === 1;
     registerHit(num);
@@ -48,7 +49,7 @@ export default function AroundTheClockInput() {
         }
       }, 300);
     }
-  };
+  }, [isSubmitting, currentPlayer, throwsLeft, registerHit, setIsSubmitting, setThrowsLeft, setStatusMessage, setPendingNextPlayer]);
   
   const handleNextPlayer = () => {
     if (isSubmitting) return;
@@ -61,6 +62,44 @@ export default function AroundTheClockInput() {
       setIsSubmitting(false);
     }, 500);
   };
+  
+  // Lägg till funktion för miss (bom)
+  const handleMissClick = () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    const isLastThrow = throwsLeft === 1;
+    registerHit(0); // 0 betyder miss
+    setThrowsLeft(prev => Math.max(0, prev - 1));
+    setStatusMessage('Bom!');
+    setTimeout(() => {
+      setIsSubmitting(false);
+      if (isLastThrow) {
+        setPendingNextPlayer(true);
+      }
+    }, 300);
+  };
+
+  // Hantera transcript från tal-till-text
+  useEffect(() => {
+    if (speech.transcript) {
+      // Dela upp på mellanrum och filtrera ut ogiltiga
+      const parts = speech.transcript
+        .split(/\s+/)
+        .map(p => p.replace(/[^0-9]/gi, ''))
+        .filter(Boolean)
+        .map(Number)
+        .filter(n => !isNaN(n) && n >= 0 && n <= 22);
+      if (parts.length === 0) return;
+      let kast = throwsLeft;
+      for (let i = 0; i < parts.length && kast > 0; i++) {
+        handleNumberClick(parts[i]);
+        kast--;
+      }
+      // Om färre än kast kvar, gör inget mer
+    }
+  }, [speech.transcript, handleNumberClick, throwsLeft]);
+
+  if (!currentPlayer) return null;
   
   // Skapa layout för dartbrädan
   const renderNumbers = () => {
@@ -304,8 +343,46 @@ export default function AroundTheClockInput() {
           </div>
         )}
         
-        <div className="mb-4">
-          {renderNumbers()}
+        <div className="mb-4 flex items-center justify-center gap-4">
+          {/* Vänster miss-knapp */}
+          <button
+            onClick={handleMissClick}
+            disabled={isSubmitting || throwsLeft === 0}
+            style={{
+              background: 'var(--secondary)',
+              color: 'var(--bg)',
+              fontWeight: 700,
+              fontSize: '1.5rem',
+              minWidth: '90px',
+              minHeight: '90px',
+              borderRadius: '1.5rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+            }}
+            className="flex items-center justify-center"
+          >
+            BOM
+          </button>
+          <div>
+            {renderNumbers()}
+          </div>
+          {/* Höger miss-knapp */}
+          <button
+            onClick={handleMissClick}
+            disabled={isSubmitting || throwsLeft === 0}
+            style={{
+              background: 'var(--secondary)',
+              color: 'var(--bg)',
+              fontWeight: 700,
+              fontSize: '1.5rem',
+              minWidth: '90px',
+              minHeight: '90px',
+              borderRadius: '1.5rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+            }}
+            className="flex items-center justify-center"
+          >
+            BOM
+          </button>
         </div>
         
         <div className="pt-2 border-t border-gray-700">

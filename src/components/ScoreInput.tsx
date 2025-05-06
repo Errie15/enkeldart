@@ -71,7 +71,7 @@ export default function ScoreInput() {
         .filter(Boolean);
       if (parts.length === 0) return;
 
-      // Om vi redan har kast kvar < 3, fortsätt på nuvarande
+      let kast = throwsLeft;
       let scores: string[] = [];
       if (throwsLeft < 3 && currentScore) {
         scores = [currentScore, ...parts];
@@ -79,29 +79,29 @@ export default function ScoreInput() {
         scores = parts;
       }
 
-      // Om vi har 3 eller fler, registrera dem direkt
-      if (scores.length >= 3) {
-        for (let i = 0; i < 3; i++) {
-          const val = scores[i];
-          if (!val) continue;
-          let scoreToRegister: number;
-          if (/[x]/.test(val)) {
-            const evalResult = evaluateExpression(val);
-            scoreToRegister = typeof evalResult === 'number' && !isNaN(evalResult) ? evalResult : 0;
-          } else {
-            scoreToRegister = parseInt(val);
-          }
-          if (!isNaN(scoreToRegister) && scoreToRegister >= 0 && scoreToRegister <= 180) {
-            registerScore(scoreToRegister);
-          }
+      // Registrera så många kast som möjligt
+      for (let i = 0; i < scores.length && kast > 0; i++) {
+        const val = scores[i];
+        let scoreToRegister: number;
+        if (/[x]/.test(val)) {
+          const evalResult = evaluateExpression(val);
+          scoreToRegister = typeof evalResult === 'number' && !isNaN(evalResult) ? evalResult : 0;
+        } else {
+          scoreToRegister = parseInt(val);
         }
-        setCurrentScore('');
-        setCalculatedValue(null);
-        setThrowsLeft(0); // Tvinga turen att gå vidare
-      } else {
-        // Annars, bygg upp currentScore
-        setCurrentScore(scores.join(' '));
+        if (!isNaN(scoreToRegister) && scoreToRegister >= 0 && scoreToRegister <= 180) {
+          registerScore(scoreToRegister);
+          kast--;
+        }
       }
+      // Om färre än kast kvar, bygg upp currentScore
+      if (kast > 0 && scores.length > 0) {
+        setCurrentScore(scores.slice(scores.length - kast).join(' '));
+      } else {
+        setCurrentScore('');
+      }
+      setCalculatedValue(null);
+      if (kast === 0) setThrowsLeft(0); // Tvinga turen att gå vidare
     }
   }, [speech.transcript, currentScore, registerScore, throwsLeft]);
 
