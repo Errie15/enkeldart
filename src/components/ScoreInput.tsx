@@ -64,6 +64,7 @@ export default function ScoreInput() {
 
   useEffect(() => {
     if (speech.transcript) {
+      if (throwsLeft === 0) return; // Blockera fler än 3 kast per runda
       // Om användaren säger t.ex. "12 OK" eller "12 ja" eller "12 kör"
       const normalized = speech.transcript.toLowerCase().trim();
       const match = normalized.match(/(\d{1,3})\s*(ok|ja|kör)?$/i);
@@ -72,13 +73,15 @@ export default function ScoreInput() {
         const confirm = match[2];
         const scoreToRegister = parseInt(scoreStr);
         if (!isNaN(scoreToRegister) && scoreToRegister >= 0 && scoreToRegister <= 180 && confirm) {
-          registerScore(scoreToRegister);
-          setStatusMessage(`${scoreToRegister} poäng registrerat! (via röst)`);
-          setCurrentScore('');
-          setCalculatedValue(null);
-          setThrowsLeft(prev => Math.max(0, prev - 1));
-          // Starta om lyssning direkt
-          setTimeout(() => speech.startListening(), 500);
+          if (throwsLeft > 0) {
+            registerScore(scoreToRegister);
+            setStatusMessage(`${scoreToRegister} poäng registrerat! (via röst)`);
+            setCurrentScore('');
+            setCalculatedValue(null);
+            setThrowsLeft(prev => Math.max(0, prev - 1));
+            // Starta om lyssning direkt
+            setTimeout(() => speech.startListening(), 500);
+          }
           return;
         }
       }
@@ -99,6 +102,7 @@ export default function ScoreInput() {
 
       // Registrera så många kast som möjligt
       for (let i = 0; i < scores.length && kast > 0; i++) {
+        if (kast === 0) break;
         const val = scores[i];
         let scoreToRegister: number;
         if (/[x]/.test(val)) {
