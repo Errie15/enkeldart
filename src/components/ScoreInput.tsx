@@ -322,6 +322,11 @@ export default function ScoreInput() {
             {speech.status === 'idle' && speech.transcript && `Hörde: "${speech.transcript}"`}
           </span>
         </div>
+        {speech.interimTranscript && (
+          <div className="text-sm font-bold mb-2" style={{ color: 'var(--accent)' }}>
+            Hör: &quot;{speech.interimTranscript}&quot;
+          </div>
+        )}
       </div>
     </div>
   );

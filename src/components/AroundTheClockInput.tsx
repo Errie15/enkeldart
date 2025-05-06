@@ -426,6 +426,29 @@ export default function AroundTheClockInput() {
             </div>
           </div>
         </div>
+
+        <div className="flex items-center gap-2 mb-2">
+          <button
+            type="button"
+            onClick={speech.status === 'listening' ? speech.stopListening : speech.startListening}
+            style={{ background: 'var(--accent)', color: 'var(--text)', border: 'none', outline: 'none' }}
+            className={`rounded-full p-2 shadow ${speech.status === 'listening' ? 'animate-pulse' : ''}`}
+            aria-label={speech.status === 'listening' ? 'Stoppa röstinmatning' : 'Starta röstinmatning'}
+          >
+            {speech.status === 'listening' ? '🎤...' : '🎤'}
+          </button>
+          <span className="text-sm font-medium" style={{ color: 'var(--detail)' }}>
+            {speech.status === 'listening' && 'Lyssnar...'}
+            {speech.status === 'unsupported' && 'Taligenkänning stöds ej'}
+            {speech.status === 'error' && (speech.error || 'Fel vid taligenkänning')}
+            {speech.status === 'idle' && speech.transcript && `Hörde: "${speech.transcript}"`}
+          </span>
+        </div>
+        {speech.interimTranscript && (
+          <div className="text-sm font-bold mb-2" style={{ color: 'var(--accent)' }}>
+            Hör: &quot;{speech.interimTranscript}&quot;
+          </div>
+        )}
       </div>
     </div>
   );

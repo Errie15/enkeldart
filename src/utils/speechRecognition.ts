@@ -38,6 +38,7 @@ export type SpeechRecognitionStatus = 'idle' | 'listening' | 'error' | 'unsuppor
 
 export interface UseSpeechRecognitionResult {
   transcript: string;
+  interimTranscript: string;
   status: SpeechRecognitionStatus;
   error: string | null;
   startListening: () => void;
@@ -46,6 +47,7 @@ export interface UseSpeechRecognitionResult {
 
 export function useSpeechRecognition(continuous = false): UseSpeechRecognitionResult {
   const [transcript, setTranscript] = React.useState('');
+  const [interimTranscript, setInterimTranscript] = React.useState('');
   const [status, setStatus] = React.useState<SpeechRecognitionStatus>('idle');
   const [error, setError] = React.useState<string | null>(null);
   const recognitionRef = React.useRef<SpeechRecognition | null>(null);
@@ -69,18 +71,25 @@ export function useSpeechRecognition(continuous = false): UseSpeechRecognitionRe
     }
     const recognition: SpeechRecognition = new RecognitionClass();
     recognition.lang = 'sv-SE';
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     recognition.continuous = continuous;
     recognitionRef.current = recognition;
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let fullTranscript = '';
-      const results = event.results as unknown as Array<{ 0: { transcript: string } }>;
-      for (let i = event.resultIndex; i < Object.keys(event.results).length; ++i) {
-        fullTranscript += results[i][0].transcript + ' ';
+      let finalTranscript = '';
+      let interim = '';
+      const results = event.results as unknown as SpeechRecognitionResultList;
+      for (let i = event.resultIndex; i < results.length; ++i) {
+        const res = results[i][0].transcript;
+        if (results[i].isFinal) {
+          finalTranscript += res + ' ';
+        } else {
+          interim += res + ' ';
+        }
       }
-      setTranscript(fullTranscript.trim());
+      setTranscript(finalTranscript.trim());
+      setInterimTranscript(interim.trim());
       setStatus('listening');
     };
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -103,6 +112,7 @@ export function useSpeechRecognition(continuous = false): UseSpeechRecognitionRe
 
   const startListening = React.useCallback(() => {
     setTranscript('');
+    setInterimTranscript('');
     setError(null);
     if (recognitionRef.current) {
       setStatus('listening');
@@ -117,5 +127,5 @@ export function useSpeechRecognition(continuous = false): UseSpeechRecognitionRe
     }
   }, []);
 
-  return { transcript, status, error, startListening, stopListening };
+  return { transcript, interimTranscript, status, error, startListening, stopListening };
 } 
